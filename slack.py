@@ -2,51 +2,40 @@ import os
 import time 
 from slackclient import SlackClient 
 
-BOT_ID = os.environ.get("BOT_ID")
-
-#constants
-AT_BOT = "<@" + BOT_ID + ">:"
-COMMAND = "<@" + BOT_ID + ">:"
+#BOT_ID = str(os.environ.get("BOT_ID"))
+BOT_ID = "<@U1JFV9U49>:"
 
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
-def handle_command(command, channel):
-	print "&&&&&& this is handle func"
-	print command
+
+def handle_command(message, channel):
 	payload = "Done!"
-	if "<@U1JFV9U49>:" in command:
+	if BOT_ID.find(message)!= -1:
 		slack_client.api_call("chat.postMessage", channel=channel, text=payload, as_user=True)
 
 		
-def parse_slack_output(slack_rtm_output):
+def parse_slack_output(slack_read_content):
 	
-	print "....../////...../////// the read output is ...///...."
-	print slack_rtm_output
-	output_list = slack_rtm_output
-	if output_list and len(output_list) > 0:
-		for output in output_list:
-			if output and 'text' in output:
-				print ".\n\n************ the channel is *****  " + output['channel']
-				print output['text']
-				return output['text'], output['channel']
+	READ = slack_read_content
+	if READ and len(READ) > 0:
+		for read in READ:
+			if read and 'text' in read:
+				return read['text'], read['channel']
 
 	return None, None
 
 
-
 if __name__ == '__main__':
 
-	READ_WEBSOCKET_DELAY = 1
-
 	if slack_client.rtm_connect():
-		print "StarBot connected and running!"
-		
+		delay = 1
+		print "Bot connected successfully"
 		while True:
-			command, channel = parse_slack_output(slack_client.rtm_read())
+			message, channel = parse_slack_output(slack_client.rtm_read())
 			
-			if command and channel:
-				handle_command(command, channel)	
-			time.sleep(READ_WEBSOCKET_DELAY)
+			if message and channel:
+				handle_command(message, channel)	
+			time.sleep(delay)
 			
 	else:
-		print "Connection failed. Invalid Slack token or bot ID?"	
+		print "Couldn't connect, please try again!"	
