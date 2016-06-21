@@ -1,29 +1,44 @@
 import os
 import time 
 import requests
+import json
 from slackclient import SlackClient 
 
-#BOT_ID = str(os.environ.get("BOT_ID"))
-BOT_ID = "<@U1JFV9U49>:"
+
+
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+BOT_ID = str(os.environ.get('BOT_ID'))
+RUN_URL = u'http://api.hackerearth.com/code/run/'
+CLIENT_SECRET = 'e9b31d9bff43f1a393ec3519515a9cd0b4bc7438'
+source = open('hello.py', 'r')
 
 
 def handle_command(message, channel):
-	#data = requests.get('http://api.topcoder.com/v2/data/srm/contests')
-	#print data.json()
+	#print"hey"
+	data = {
+	    'client_secret': CLIENT_SECRET,
+	    'async': 0,
+	    'source': source.read(),
+	    'lang': "PYTHON",
+	    'time_limit': 5,
+	    'memory_limit': 262144,
+	}
 	
-	from urllib2 import Request, urlopen
-	request = Request('http://api.topcoder.com/v2/data/srm/contests')
-	response_body = urlopen(request).read()
-	print response_body
-	
-	payload = "Done!"
-	if BOT_ID.find(message)!= -1:
-		slack_client.api_call("chat.postMessage", channel=channel, text=payload, as_user=True)
+	command = message.split()
+	command = command[1]
+	if BOT_ID in message and "hello.py" in command:
 
+		r = requests.post(RUN_URL, data=data)
+		j =  r.json()
+		pay = j['run_status']
+		pay = json.dumps(pay)
+		pay = json.loads(pay)	
+		output = "OUTPUT: \n" + pay['output']	
+		slack_client.api_call("chat.postMessage", channel=channel, text=output, as_user=True)
 		
+
 def parse_slack_output(slack_read_content):
-	
+	#print "hello"
 	READ = slack_read_content
 	if READ and len(READ) > 0:
 		for read in READ:
@@ -46,4 +61,4 @@ if __name__ == '__main__':
 			time.sleep(delay)
 			
 	else:
-		print "Couldn't connect, please try again!"	
+		print "Error!"	
