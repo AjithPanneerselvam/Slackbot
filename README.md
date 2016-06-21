@@ -1,3 +1,4 @@
 ## Slack Bot
 
-Slack bot to compile and run the python script.
+Slack bot to compile and run the python script using Hackerearth compiler.
+
