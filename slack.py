@@ -14,7 +14,6 @@ source = open('hello.py', 'r')
 
 
 def handle_command(message, channel):
-	#print"hey"
 	data = {
 	    'client_secret': CLIENT_SECRET,
 	    'async': 0,
@@ -38,7 +37,6 @@ def handle_command(message, channel):
 		
 
 def parse_slack_output(slack_read_content):
-	#print "hello"
 	READ = slack_read_content
 	if READ and len(READ) > 0:
 		for read in READ:
