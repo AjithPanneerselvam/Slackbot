@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Slackbot by AjithPanneerselvam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Slackbot</h1>
+      <h2 class="project-tagline">Slack bot to run python script (Under development).</h2>
+      <a href="https://github.com/AjithPanneerselvam/Slackbot" class="btn">View on GitHub</a>
+      <a href="https://github.com/AjithPanneerselvam/Slackbot/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/AjithPanneerselvam/Slackbot/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h3>
+<a id="slackbot" class="anchor" href="#slackbot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Slackbot</h3>
+
+<p>A bot to run and display the output of your python script right on slack itself, which is posted in the general channel of your slack team. </p>
+
+<h2>
+<a id="apis-used" class="anchor" href="#apis-used" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API's used</h2>
+
+<ul>
+<li>SLACK API</li>
+<li>HackerEarth </li>
+</ul>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Python 2.7</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<ol>
+<li>Clone this repository in your desired directory</li>
+<li>Create a slack bot <a href="https://api.slack.com/bot-users">here</a>
+</li>
+<li>Export your <strong>Slack bot token</strong> using the command prompt or terminal with the name <strong>SLACK_BOT_TOKEN</strong>
+</li>
+<li>Run the python script <strong>slackbot.py</strong>.(Now your bot is made online and you are good to go)</li>
+</ol>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>To trigger your bot to fetch you the output of the python script posted in the general channel, do as follows: </p>
+
+<p><code>@botname: name_of_the_file.py</code></p>
+
+<h2>
+<a id="source-code" class="anchor" href="#source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Source code</h2>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> os
+<span class="pl-k">import</span> time 
+<span class="pl-k">import</span> requests
+<span class="pl-k">import</span> json
+<span class="pl-k">from</span> slackclient <span class="pl-k">import</span> SlackClient 
+
+
+slack_client <span class="pl-k">=</span> SlackClient(os.environ.get(<span class="pl-s"><span class="pl-pds">'</span>SLACK_BOT_TOKEN<span class="pl-pds">'</span></span>))
+<span class="pl-c1">BOT_ID</span> <span class="pl-k">=</span> <span class="pl-c1">str</span>(os.environ.get(<span class="pl-s"><span class="pl-pds">'</span>BOT_ID<span class="pl-pds">'</span></span>))
+<span class="pl-c1">RUN_URL</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-k">u</span><span class="pl-pds">'</span>http://api.hackerearth.com/code/run/<span class="pl-pds">'</span></span>
+<span class="pl-c1">CLIENT_SECRET</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>e9b31d9bff43f1a393ec3519515a9cd0b4bc7438<span class="pl-pds">'</span></span>
+
+
+<span class="pl-k">def</span> <span class="pl-en">handle_command</span>(<span class="pl-smi">message</span>, <span class="pl-smi">channel</span>):
+
+    <span class="pl-k">if</span> <span class="pl-c1">BOT_ID</span> <span class="pl-k">in</span> message:
+        command <span class="pl-k">=</span> message.split()
+        file_name<span class="pl-k">=</span> <span class="pl-c1">str</span>(command[<span class="pl-c1">1</span>])
+        directory <span class="pl-k">=</span> os.getcwd() <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>/<span class="pl-pds">'</span></span> <span class="pl-k">+</span> file_name 
+        is_present <span class="pl-k">=</span> os.path.isfile(directory)
+
+        <span class="pl-k">if</span> is_present:
+            source <span class="pl-k">=</span> <span class="pl-c1">open</span>(file_name, <span class="pl-s"><span class="pl-pds">'</span>r<span class="pl-pds">'</span></span>)
+            data <span class="pl-k">=</span> {
+             <span class="pl-s"><span class="pl-pds">'</span>client_secret<span class="pl-pds">'</span></span>: <span class="pl-c1">CLIENT_SECRET</span>,
+             <span class="pl-s"><span class="pl-pds">'</span>async<span class="pl-pds">'</span></span>: <span class="pl-c1">0</span>,
+            <span class="pl-s"><span class="pl-pds">'</span>source<span class="pl-pds">'</span></span>: source.read(),
+            <span class="pl-s"><span class="pl-pds">'</span>lang<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">"</span>PYTHON<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">'</span>time_limit<span class="pl-pds">'</span></span>: <span class="pl-c1">5</span>,
+                <span class="pl-s"><span class="pl-pds">'</span>memory_limit<span class="pl-pds">'</span></span>: <span class="pl-c1">262144</span>,
+            }
+
+            r <span class="pl-k">=</span> requests.post(<span class="pl-c1">RUN_URL</span>, <span class="pl-v">data</span><span class="pl-k">=</span>data)
+            j <span class="pl-k">=</span>  r.json()
+            pay <span class="pl-k">=</span> j[<span class="pl-s"><span class="pl-pds">'</span>run_status<span class="pl-pds">'</span></span>]
+            pay <span class="pl-k">=</span> json.dumps(pay)
+            pay <span class="pl-k">=</span> json.loads(pay)   
+            output <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>OUTPUT: <span class="pl-cce">\n</span><span class="pl-pds">"</span></span> <span class="pl-k">+</span> pay[<span class="pl-s"><span class="pl-pds">'</span>output<span class="pl-pds">'</span></span>]   
+            slack_client.api_call(<span class="pl-s"><span class="pl-pds">"</span>chat.postMessage<span class="pl-pds">"</span></span>, <span class="pl-v">channel</span><span class="pl-k">=</span>channel, <span class="pl-v">text</span><span class="pl-k">=</span>output, <span class="pl-v">as_user</span><span class="pl-k">=</span><span class="pl-c1">True</span>)
+
+        <span class="pl-k">else</span>:
+            output <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>File is not present in current working directory!<span class="pl-pds">"</span></span>
+            slack_client.api_call(<span class="pl-s"><span class="pl-pds">"</span>chat.postMessage<span class="pl-pds">"</span></span>, <span class="pl-v">channel</span><span class="pl-k">=</span>channel, <span class="pl-v">text</span><span class="pl-k">=</span>output, <span class="pl-v">as_user</span><span class="pl-k">=</span><span class="pl-c1">True</span>)
+
+
+<span class="pl-k">def</span> <span class="pl-en">parse_slack_output</span>(<span class="pl-smi">slack_read_content</span>):
+    <span class="pl-c1">READ</span> <span class="pl-k">=</span> slack_read_content
+    <span class="pl-k">if</span> <span class="pl-c1">READ</span> <span class="pl-k">and</span> <span class="pl-c1">len</span>(<span class="pl-c1">READ</span>) <span class="pl-k">&gt;</span> <span class="pl-c1">0</span>:
+        <span class="pl-k">for</span> read <span class="pl-k">in</span> <span class="pl-c1">READ</span>:
+            <span class="pl-k">if</span> read <span class="pl-k">and</span> <span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span> <span class="pl-k">in</span> read:
+                <span class="pl-k">return</span> read[<span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>], read[<span class="pl-s"><span class="pl-pds">'</span>channel<span class="pl-pds">'</span></span>]
+
+    <span class="pl-k">return</span> <span class="pl-c1">None</span>, <span class="pl-c1">None</span>
+
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">'</span>__main__<span class="pl-pds">'</span></span>:
+
+    <span class="pl-k">if</span> slack_client.rtm_connect():
+        delay <span class="pl-k">=</span> <span class="pl-c1">1</span>
+        <span class="pl-c1">print</span> <span class="pl-s"><span class="pl-pds">"</span>Bot connected successfully<span class="pl-pds">"</span></span>
+        <span class="pl-k">while</span> <span class="pl-c1">True</span>:
+            message, channel <span class="pl-k">=</span> parse_slack_output(slack_client.rtm_read())
+
+            <span class="pl-k">if</span> message <span class="pl-k">and</span> channel:
+                handle_command(message, channel)    
+            time.sleep(delay)
+
+    <span class="pl-k">else</span>:
+              <span class="pl-c1">print</span> <span class="pl-s"><span class="pl-pds">"</span>Error!<span class="pl-pds">"</span></span>    </pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/AjithPanneerselvam/Slackbot">Slackbot</a> is maintained by <a href="https://github.com/AjithPanneerselvam">AjithPanneerselvam</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
