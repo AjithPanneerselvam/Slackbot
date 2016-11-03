@@ -8,7 +8,7 @@ from slackclient import SlackClient
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 BOT_ID = str(os.environ.get('BOT_ID'))
 RUN_URL = u'http://api.hackerearth.com/code/run/'
-CLIENT_SECRET = 'e9b31d9bff43f1a393ec3519515a9cd0b4bc7438'
+CLIENT_SECRET = 'Enter your client secret'
 
 
 def handle_command(message, channel):
